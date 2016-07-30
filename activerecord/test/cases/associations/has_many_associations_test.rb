@@ -621,6 +621,18 @@ class HasManyAssociationsTest < ActiveRecord::TestCase
     assert_raise(ActiveRecord::RecordNotFound) { firm.clients.find(2, 99) }
   end
 
+  def test_find_one_message_on_primary_key
+    firm = Firm.all.merge!(:order => "id").first
+
+    e = assert_raises(ActiveRecord::RecordNotFound) do
+      firm.clients.find(0)
+    end
+    assert_not_nil e.id
+    assert_not_nil e.primary_key
+    assert_not_nil e.model
+    assert_match /\ACouldn't find Client with 'id'=0/, e.message
+  end
+
   def test_find_ids_and_inverse_of
     force_signal37_to_load_all_clients_of_firm
 

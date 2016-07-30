@@ -1124,6 +1124,16 @@ class FinderTest < ActiveRecord::TestCase
     assert_equal [0, 1, 1], posts.map(&:author_id).sort
   end
 
+  def test_find_one_message_on_primary_key
+    e = assert_raises(ActiveRecord::RecordNotFound) do
+      Car.find(0)
+    end
+    assert_not_nil e.id
+    assert_not_nil e.primary_key
+    assert_not_nil e.model
+    assert_equal %Q{Couldn't find Car with 'id'=0}, e.message
+  end
+
   def test_find_one_message_with_custom_primary_key
     table_with_custom_primary_key do |model|
       model.primary_key = :name
